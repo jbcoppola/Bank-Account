@@ -3,14 +3,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using System.IO;
 
 namespace BankAccount
 {
-	class Savings : Account
+	class Checking : Account
 	{
 		//fields
-		private string accountType = "Savings";
+		private string accountType = "Checking";
 
 		//properties
 		//read-only, will never change per account
@@ -20,11 +19,11 @@ namespace BankAccount
 		}
 
 		//constructors
-		public Savings(string firstName, string lastName) : base(firstName, lastName, "Savings")
+		public Checking(string firstName, string lastName) : base(firstName, lastName, "Checking")
 		{
 		}
 		//methods
-		//will always write to savings file
+		//will always write to checking file
 		public void LogDeposit()
 		{
 			base.LogDeposit(AccountType);

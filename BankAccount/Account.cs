@@ -7,7 +7,7 @@ using System.IO;
 
 namespace BankAccount
 {
-	abstract class Account
+	class Account
 	{
 		//fields
 		private int accountNumber;
@@ -51,11 +51,18 @@ namespace BankAccount
 			get { return this.accountType; }
 		}
 
-		//constructors
-		//no constructors for an abstract class
+		//constructor, only called by derived classes
+		protected Account(string firstName, string lastName, string accountType)
+		{
+			this.FirstName = firstName;
+			this.LastName = lastName;
+			Random rand = new Random();
+			this.AccountNumber = rand.Next(30000000);
+			this.accountType = accountType;
+		}
 
 		//methods
-		//should only be accessed by other methods in derived classes, so is private
+		//should only be accessed by other methods in derived classes, so is protected
 		protected double GetAmount(string action)
 		{
 			Console.WriteLine("Enter amount to {0}.", action);
@@ -74,22 +81,44 @@ namespace BankAccount
 			return amount;
 		}
 
-		public virtual void Deposit()
+		//deposits user-entered amount of money into overall balance. Only used in LogDeposit, so private
+		private double Deposit()
 		{
 			double amount = GetAmount("deposit");
 			Balance += amount;
-			LogAmount(true, amount);
+			return amount;
 		}
 
-
-		public virtual void Withdraw()
+		//logs and writes record of deposit transaction to file - base class will be altered by derived classes, 
+		//so this will version never be called outside of derived class
+		protected void LogDeposit(string filename)
+		{
+			double amount = Deposit();
+			string text = TimestampAmountToString(true, amount);
+			WriteToFile(filename, text);
+			Console.WriteLine("${0} deposited.", amount);
+		}
+		
+		//withdraws user-entered amount of money from overall balance. Only used in LogWithdraw, so private
+		private double Withdraw()
 		{
 			double amount = GetAmount("withdraw");
 			Balance -= amount;
-			LogAmount(false, amount);
+			return amount;
 		}
 
-		public string LogAmount(bool isDeposit, double amount)
+		//logs and writes record of deposit transaction to file - base class will be altered by derived classes, 
+		//so this will version never be called outside of derived class
+		protected void LogWithdraw(string filename)
+		{
+			double amount = Withdraw();
+			string text = TimestampAmountToString(false, amount);
+			WriteToFile(filename, text);
+			Console.WriteLine("${0} withdrawn.", amount);
+		}
+
+		//creates the timestamp record of deposit string to be written into file
+		protected string TimestampAmountToString(bool isDeposit, double amount)
 		{
 			DateTime current = DateTime.Now;
 			string text = current.ToString();
@@ -105,5 +134,23 @@ namespace BankAccount
 			text += ", current balance is $" + Balance;
 			return text;
 		}
+
+		//writes name and account number to file at top of file
+		protected virtual void WriteInitialDataToFiles(string filename)
+		{
+			StreamWriter writer = new StreamWriter(filename + ".txt");
+			writer.WriteLine("Client name: " + this.FullName);
+			writer.WriteLine("Account #: " + this.AccountNumber);
+			writer.Close();
+		}
+
+		//writes desired text to specified file - base should only be used in derived classes, so is protected
+		public void WriteToFile(string filename, string text)
+		{
+			StreamWriter writer = File.AppendText(filename + ".txt");
+			writer.WriteLine(text);
+			writer.Close();
+		}
+
 	}
 }

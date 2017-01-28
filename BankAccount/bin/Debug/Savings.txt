@@ -1,0 +1,5 @@
+Bill Gates
+29496772
+Savings
+1/28/2017 3:38:40 PM : +34444, current balance is $34444
+1/28/2017 3:38:47 PM : -3333, current balance is $31111
